@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BridgePro - LPS & EVM Integrated System</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-dark: #0B2545;
+            --primary-blue: #134074;
+            --secondary-blue: #8DA9C4;
+            --sidebar-color: #37807f;
+            --light-bg: #EEF4F8;
+            --white: #FFFFFF;
+            --success: #2ec4b6;
+            --warning: #ffb703;
+            --danger: #e63946;
+            --text-dark: #1d3557;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Background Gambar */
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+          aside {
+            width: 260px;
+            background: linear-gradient(180deg, #37807f 0%, #22373f 100%);
+            color: var(--white);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo-area {
+            padding: 10px 0 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .logo-area h2 {
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: var(--white);
+        }
+
+        .logo-area span {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            display: block;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .menu-item.active a, .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+        }
+
+        /* Main Content Area */
+        .main-container {
+            position: relative;
+            z-index: 5;
+            margin-left: 260px;
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Hero Card Transparan (Glassmorphism) */
+        .hero-card {
+            width: 100%;
+            max-width: 900px;
+            border-radius: 28px;
+            padding: 50px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Logo Tengah Atas Container */
+        .hero-logo {
+            max-width: 180px;
+            height: auto;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            background: rgba(55, 128, 127, 0.15);
+            color: #37807f;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .project-title {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.25;
+            margin-bottom: 35px;
+            letter-spacing: -0.5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-box {
+            padding: 22px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .info-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .info-box .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-box .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            aside { 
+                width: 70px; 
+                padding: 10px; 
+            }
+            aside .logo-area h2, aside span, .menu-item span { 
+                display: none; 
+            }
+            .main-container { 
+                margin-left: 70px; 
+                padding: 20px; 
+            }
+            .info-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .project-title { 
+                font-size: 1.8rem; 
+            }
+            .hero-card {
+                padding: 35px 20px;
+            }
+            .hero-logo {
+                max-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside>
+        <div class="logo-area">
+            <h2>MonitoringSystem</h2>
+            <span>Project Management System</span>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item active"><a href="index.html"> <span>Home</span></a></li>
+            <li class="menu-item"><a href="lps.html"> <span>Last Planner Dashboard</span></a></li>
+            <li class="menu-item"><a href="progress.html"> <span>Progress Monitoring</span></a></li>
+            <li class="menu-item"><a href="stock.html"> <span>Stock Management</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-container">
+        <section class="hero-card">
+            <!-- Logo di Tengah Atas -->
+            <img src="logo.png" alt="Logo Proyek" class="hero-logo">
+
+            <span class="project-badge">Project Management System</span>
+            
+            <h1 class="project-title">
+                Pembangunan Gedung Akademi Civil Week<br>Civil Week
+            </h1>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <div class="label">Main Contractor</div>
+                    <div class="value">
+                        PT Ijazah Asli
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="label">Lokasi Proyek</div>
+                    <div class="value">
+                        Jebres, Jawa Tengah
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

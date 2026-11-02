@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPROYEK - Last Planner System (LPS) Core</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-color: #37807f;
+            --sidebar-dark: #22373f;
+            --primary: #0f5f66;
+            --primary-dark: #12333b;
+            --primary-soft: #e6f3f2;
+            --success: #2ec4b6;
+            --warning: #ffb703;
+            --danger: #e63946;
+            --text: #18333a;
+            --text-soft: #667980;
+            --white: #ffffff;
+            --border: rgba(255,255,255,0.72);
+            --glass: rgba(255,255,255,0.84);
+            --glass-soft: rgba(255,255,255,0.68);
+            --shadow: 0 18px 45px rgba(27, 51, 58, 0.13);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(242, 249, 248, 0.22);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 260px;
+            background: linear-gradient(180deg, #37807f 0%, #22373f 100%);
+            color: var(--white);
+            padding: 24px 18px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 8px 0 30px rgba(24, 51, 58, 0.15);
+        }
+
+        .logo-area {
+            padding: 8px 10px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
+            margin-bottom: 22px;
+        }
+
+        .logo-area h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo-area span {
+            font-size: 11px;
+            color: rgba(255,255,255,0.72);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .menu-list { list-style: none; }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 14px;
+            color: rgba(255,255,255,0.70);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 7px;
+            transition: all 0.25s ease;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .menu-item a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .menu-item.active a,
+        .menu-item a:hover {
+            background: rgba(255,255,255,0.14);
+            color: var(--white);
+            transform: translateX(2px);
+        }
+
+        /* Main */
+        main {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 22px;
+            padding: 25px 28px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            line-height: 1.25;
+            color: var(--primary-dark);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color: var(--text-soft);
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        /* Tabs */
+        .lps-tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+            padding: 6px;
+            background: rgba(255,255,255,0.62);
+            border: 1px solid rgba(255,255,255,0.78);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(27,51,58,0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 11px 17px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: rgba(55,128,127,0.08);
+        }
+
+        .tab-btn.active {
+            color: var(--white);
+            background: linear-gradient(135deg, #37807f, #285b61);
+            box-shadow: 0 7px 18px rgba(55,128,127,0.25);
+        }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* Section cards */
+        .section-box {
+            background: var(--glass);
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            margin-bottom: 22px;
+        }
+
+        .section-box h3 {
+            margin-bottom: 18px;
+            color: var(--primary-dark);
+            font-size: 16px;
+            font-weight: 800;
+            padding-bottom: 13px;
+            border-bottom: 1px solid rgba(18,51,59,0.09);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-box h3 i { color: var(--primary); }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            line-height: 1.2;
+            font-weight: 800;
+            letter-spacing: 0.25px;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .badge.red { background: var(--danger); }
+        .badge.yellow { background: var(--warning); color: #27302e; }
+        .badge.green { background: var(--success); }
+
+        /* Summary */
+        .constraint-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(255,255,255,0.82);
+            border-radius: 18px;
+            padding: 19px;
+            box-shadow: 0 10px 28px rgba(27,51,58,0.08);
+        }
+
+        .summary-card::after {
+            content: "";
+            position: absolute;
+            right: -22px;
+            bottom: -30px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: rgba(55,128,127,0.07);
+        }
+
+        .summary-card.danger { border-top: 4px solid var(--danger); }
+        .summary-card.warning { border-top: 4px solid var(--warning); }
+        .summary-card.success { border-top: 4px solid var(--success); }
+        .summary-card:not(.danger):not(.warning):not(.success) { border-top: 4px solid var(--primary); }
+
+        .summary-card .label {
+            font-size: 11px;
+            color: var(--text-soft);
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .summary-card .val {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 7px;
+            color: var(--primary-dark);
+        }
+
+        /* Tables */
+        .section-box:has(table) {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        table th {
+            background: rgba(230,243,242,0.88);
+            color: var(--primary-dark);
+            padding: 13px 12px;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(18,51,59,0.10);
+        }
+
+        table th:first-child { border-radius: 10px 0 0 0; }
+        table th:last-child { border-radius: 0 10px 0 0; }
+
+        table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid rgba(18,51,59,0.07);
+            vertical-align: middle;
+            color: #344e55;
+        }
+
+        table tbody tr {
+            transition: background 0.18s ease;
+        }
+
+        table tbody tr:hover {
+            background: rgba(255,255,255,0.62);
+        }
+
+        table strong { color: var(--primary-dark); }
+        table small { color: var(--text-soft); }
+
+        /* Form */
+        .inline-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) 105px;
+            gap: 12px;
+            background: rgba(230,243,242,0.52);
+            border: 1px solid rgba(55,128,127,0.10);
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            min-height: 38px;
+            padding: 8px 11px;
+            border: 1px solid rgba(18,51,59,0.14);
+            background: rgba(255,255,255,0.88);
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--sidebar-color);
+            box-shadow: 0 0 0 3px rgba(55,128,127,0.12);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #37807f, #285b61);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            align-self: flex-end;
+            min-height: 38px;
+            transition: all 0.2s ease;
+            box-shadow: 0 7px 17px rgba(55,128,127,0.20);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(55,128,127,0.28);
+        }
+
+        /* WWP / PPC */
+        .ppc-split-layout {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.85fr) minmax(500px, 1.75fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .ppc-circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 22px;
+            background: rgba(230,243,242,0.50);
+            border: 1px solid rgba(55,128,127,0.09);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .circle-progress {
+            position: relative;
+            width: 155px;
+            height: 155px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% 75%, #dce9e8 75% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 25px rgba(27,51,58,0.10);
+        }
+
+        .circle-progress::before {
+            content: "";
+            position: absolute;
+            width: 123px;
+            height: 123px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.94);
+        }
+
+        .circle-text {
+            position: relative;
+            font-size: 31px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .ppc-circle-container > p:first-of-type {
+            font-size: 13px;
+            color: var(--primary-dark);
+        }
+
+        .ppc-circle-container > p:last-of-type {
+            font-size: 11px !important;
+            line-height: 1.6;
+            color: var(--text-soft) !important;
+        }
+
+        /* Root causes */
+        .cause-bar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .cause-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cause-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: #405860;
+        }
+
+        .bar-outer {
+            width: 100%;
+            height: 9px;
+            background: rgba(18,51,59,0.09);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .bar-inner {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .cause-item:nth-child(1) .bar-inner { background: var(--danger); }
+        .cause-item:nth-child(2) .bar-inner { background: var(--warning); }
+
+        /* Checkboxes/selects in WWP */
+        #wwp-table input[type="checkbox"] {
+            accent-color: var(--primary);
+        }
+
+        #wwp-table select {
+            border: 1px solid rgba(18,51,59,0.13);
+            background: rgba(255,255,255,0.80);
+            color: var(--text);
+            border-radius: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .constraint-summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .ppc-split-layout { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            aside {
+                width: 72px;
+                padding: 16px 10px;
+            }
+
+            aside .logo-area h2,
+            aside .logo-area span,
+            .menu-item span {
+                display: none;
+            }
+
+            .logo-area {
+                padding: 8px 0 18px;
+                text-align: center;
+            }
+
+            .menu-item a {
+                justify-content: center;
+                padding: 13px 8px;
+            }
+
+            main {
+                margin-left: 72px;
+                padding: 20px;
+            }
+
+            header {
+                border-radius: 22px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .constraint-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 14px;
+            }
+
+            header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .header-title h1 { font-size: 21px; }
+
+            .lps-tabs-nav {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+                text-align: left;
+            }
+
+            .section-box {
+                padding: 17px;
+                border-radius: 17px;
+            }
+
+            .inline-form {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo-area">
+            <h2>MonitoringSystem</h2>
+            <span>Project Management System</span>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item"><a href="index.html"> <span>Home</span></a></li>
+            <li class="menu-item active"><a href="lps.html"> <span>Last Planner Dashboard</span></a></li>
+            <li class="menu-item"><a href="progress.html"> <span>Progress Monitoring</span></a></li>
+            <li class="menu-item"><a href="stock.html"> <span>Stock Management</span></a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <header>
+            <div class="header-title">
+                <h1>Modul Last Planner System (LPS)</h1>
+                <p>Mesin Pengendali Proyek Utama (Siproyek Core) - Span 2 Bridge Construction</p>
+            </div>
+            <div><span class="badge green">LPS ACTIVE</span></div>
+        </header>
+
+        <div class="lps-tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'lookahead')">1. Look-Ahead Planning (3-6 Minggu)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'wwp')">2. Weekly Work Plan & PPC Tracker</button>
+        </div>
+
+        <div id="lookahead" class="tab-pane active">
+            <div class="constraint-summary-grid">
+                <div class="summary-card">
+                    <div class="label">Total Constraints Teridentifikasi</div>
+                    <div class="val" id="count-total">7</div>
+                </div>
+                <div class="summary-card danger">
+                    <div class="label">Constraint Overdue (Terlambat)</div>
+                    <div class="val" id="count-overdue">2</div>
+                </div>
+                <div class="summary-card warning">
+                    <div class="label">Active / Open Constraint</div>
+                    <div class="val" id="count-open">3</div>
+                </div>
+                <div class="summary-card success">
+                    <div class="label">Constraint Resolved (Clear)</div>
+                    <div class="val" id="count-resolved">2</div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <h3><i class="fa-solid fa-folder-plus"></i> Identifikasi Constraint Baru (Look-Ahead Input)</h3>
+                <form class="inline-form" id="constraint-form" onsubmit="addConstraint(event)">
+                    <div class="form-group">
+                        <label for="con-desc">Deskripsi Kendala</label>
+                        <input type="text" id="con-desc" placeholder="Contoh: Ready Mix K-350 terlambat" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="con-job">Pekerjaan Terdampak</label>
+                        <input type="text" id="con-job" placeholder="Contoh: Pengecoran kolom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="con-type">Kategori Botleneck</label>
+                        <select id="con-type">
+                            <option value="Material">Material</option>
+                            <option value="Shop Drawing / Desain">Shop Drawing / Desain</option>
+                            <option value="Akses & Alat Berat">Akses & Alat Berat</option>
+                            <option value="Metode Kerja">Metode Kerja</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="con-pic">PIC / Penanggung Jawab</label>
+                        <input type="text" id="con-pic" placeholder="Contoh: Bp. Hermawan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="con-date">Deadline Selesai</label>
+                        <input type="date" id="con-date" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Simpan</button>
+                </form>
+            </div>
+
+            <div class="section-box">
+                <h3><i class="fa-solid fa-list-check"></i> Constraint Log Tracker (Looking-Ahead 3-6 Minggu)</h3>
+                <table id="constraint-table">
+                    <thead>
+                        <tr>
+                            <th>Kategori</th>
+                            <th>Deskripsi Kendala / Bottleneck</th>
+                            <th>Pekerjaan Terdampak</th>
+                            <th>PIC</th>
+                            <th>Deadline Target</th>
+                            <th>Status Tracking</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-status="overdue">
+                            <td><span class="badge red">Shop Drawing</span></td>
+                            <td>Metode Erection atap segmen 2 belum disetujui konsultan pengawas</td>
+                            <td>Erection segmen 2 (rangka ab12)</td>
+                            <td>Bp. Aufa (Eng)</td>
+                            <td>15 Mei 2026</td>
+                            <td><span class="badge red">OVERDUE</span></td>
+                            <td><button onclick="resolveConstraint(this)" class="badge green" style="border:none; cursor:pointer;">Set Clear</button></td>
+                        </tr>
+                        <tr data-status="overdue">
+                            <td><span class="badge red">Material</span></td>
+                            <td>Baut High Tensile Bp5pad belum tiba di Gudang site</td>
+                            <td>Rangka atap segmen 3 af45f</td>
+                            <td>Logistik Pusat</td>
+                            <td>18 Mei 2026</td>
+                            <td><span class="badge red">OVERDUE</span></td>
+                            <td><button onclick="resolveConstraint(this)" class="badge green" style="border:none; cursor:pointer;">Set Clear</button></td>
+                        </tr>
+                        <tr data-status="open">
+                            <td><span class="badge yellow">Akses & Alat</span></td>
+                            <td>Izin Mobilisasi Multi-Axle Trailer dari Dishub Jatim</td>
+                            <td>Mobilisasi material rangka atap segmen 8</td>
+                            <td>Site Manager</td>
+                            <td>28 Mei 2026</td>
+                            <td><span class="badge yellow">IN PROGRESS</span></td>
+                            <td><button onclick="resolveConstraint(this)" class="badge green" style="border:none; cursor:pointer;">Set Clear</button></td>
+                        </tr>
+                        <tr data-status="open">
+                            <td><span class="badge yellow">Shop Drawing</span></td>
+                            <td>Persetujuan Trial Mix Concrete K-225 dari Vendor Baru</td>
+                            <td>Pengecoran area kf4</td>
+                            <td>Bp. Dwi (QC)</td>
+                            <td>04 Juni 2026</td>
+                            <td><span class="badge yellow">IN PROGRESS</span></td>
+                            <td><button onclick="resolveConstraint(this)" class="badge green" style="border:none; cursor:pointer;">Set Clear</button></td>
+                        </tr>
+                        <tr data-status="resolved">
+                            <td><span class="badge green">Metode Kerja</span></td>
+                            <td>Penyusunan JSA (Job Safety Analysis) Erection atap</td>
+                            <td>K3 Konstruksi</td>
+                            <td>K3 Specialist</td>
+                            <td>12 Mei 2026</td>
+                            <td><span class="badge green">RESOLVED</span></td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="wwp" class="tab-pane">
+            <div class="ppc-split-layout">
+                <div class="section-box" style="margin-bottom:0;">
+                    <h3><i class="fa-solid fa-gauge"></i> Real-time PPC Tracker</h3>
+                    <div class="ppc-circle-container">
+                        <div class="circle-progress" id="ppc-donut">
+                            <span class="circle-text" id="ppc-percentage">75%</span>
+                        </div>
+                        <p style="font-weight: 600; margin-bottom: 10px;">Percent Plan Complete (PPC) Minggu Ini</p>
+                        <p style="font-size: 13px; color: var(--gray-sub);">
+                            Centang checklist target WWP di samping kanan untuk mensimulasikan pencapaian riil lapangan. Sistem akan mengkalkulasi otomatis.
+                        </p>
+                    </div>
+
+                    <h3 style="margin-top: 25px;"><i class="fa-solid fa-chart-bar"></i> Root Cause Penyebab Gagal</h3>
+                    <div class="cause-bar-list">
+                        <div class="cause-item">
+                            <div class="cause-header">
+                                <span>Material Belum Datang</span>
+                                <span id="val-rc-material">50%</span>
+                            </div>
+                            <div class="bar-outer"><div class="bar-inner" id="bar-rc-material" style="width: 50%;"></div></div>
+                        </div>
+                        <div class="cause-item">
+                            <div class="cause-header">
+                                <span>Alat Berat Rusak / Standby</span>
+                                <span id="val-rc-alat">30%</span>
+                            </div>
+                            <div class="bar-outer"><div class="bar-inner" id="bar-rc-alat" style="width: 30%;"></div></div>
+                        </div>
+                        <div class="cause-item">
+                            <div class="cause-header">
+                                <span>Cuaca Buruk (Hujan Deras)</span>
+                                <span id="val-rc-cuaca">15%</span>
+                            </div>
+                            <div class="bar-outer"><div class="bar-inner" id="bar-rc-cuaca" style="width: 15%;"></div></div>
+                        </div>
+                        <div class="cause-item">
+                            <div class="cause-header">
+                                <span>Tenaga Kerja Absen / Kurang</span>
+                                <span id="val-rc-manpower">5%</span>
+                            </div>
+                            <div class="bar-outer"><div class="bar-inner" id="bar-rc-manpower" style="width: 5%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box" style="margin-bottom:0;">
+                    <h3><i class="fa-solid fa-table-list"></i> Lembar Weekly Work Plan (WWP) - Minggu 14 (Mei 2026)</h3>
+                    <table id="wwp-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">Selesai</th>
+                                <th>Pekerjaan & Lokasi (Span/Abutment)</th>
+                                <th>Volume Target</th>
+                                <th>Pelaksana (PIC)</th>
+                                <th>Penyebab Gagal (Jika Tidak Selesai)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-wwp-id="1">
+                                <td style="text-align:center;"><input type="checkbox" checked onchange="recalculatePPC()" style="transform: scale(1.3); cursor: pointer;"></td>
+                                <td><strong>Pengecoran Abutment area kf3
+                                </strong><br><small>Lokasi: area kf3</small></td>
+                                <td>120 m³</td><td>Bp. Joko Santoso</td>
+                                <td><select disabled onchange="updateRootCauses()" style="width:100%; padding: 4px; font-size:12px;"><option value="None">Selesai 100%</option></select></td>
+                            </tr>
+                            <tr data-wwp-id="2">
+                                <td style="text-align:center;"><input type="checkbox" checked onchange="recalculatePPC()" style="transform: scale(1.3); cursor: pointer;"></td>
+                                <td><strong>Erection atap Segmen 1-3</strong><br><small>Lokasi: Span 2 kf17</small></td>
+                                <td>3 Balok</td><td>Bp. Danang</td>
+                                <td><select disabled onchange="updateRootCauses()" style="width:100%; padding: 4px; font-size:12px;"><option value="None">Selesai 100%</option></select></td>
+                            </tr>
+                            <tr data-wwp-id="3">
+                                <td style="text-align:center;"><input type="checkbox" checked onchange="recalculatePPC()" style="transform: scale(1.3); cursor: pointer;"></td>
+                                <td><strong>Pemasangan ikatan atap</strong><br><small>Lokasi: joint atap js56</small></td>
+                                <td>8 Unit</td><td>Bp. Ridwan</td>
+                                <td><select disabled onchange="updateRootCauses()" style="width:100%; padding: 4px; font-size:12px;"><option value="None">Selesai 100%</option></select></td>
+                            </tr>
+                            <tr data-wwp-id="4">
+                                <td style="text-align:center;"><input type="checkbox" onchange="recalculatePPC()" style="transform: scale(1.3); cursor: pointer;"></td>
+                                <td><strong>fabrikasi segmen 8</strong><br><small>Lokasi: fabri 2</small></td>
+                                <td>150 m²</td><td>Bp. Sodik</td>
+                                <td>
+                                    <select onchange="updateRootCauses()" style="width:100%; padding: 6px; font-size:12px;">
+                                        <option value="Material">Gagal: Material Belum Datang</option>
+                                        <option value="Alat">Gagal: Alat Berat Standby</option>
+                                        <option value="Cuaca">Gagal: Faktor Cuaca Buruk</option>
+                                        <option value="Tenaga">Gagal: Kekurangan Tenaga Kerja</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(evt, tabId) {
+            let tabPanes = document.querySelectorAll(".tab-pane");
+            tabPanes.forEach(pane => pane.classList.remove("active"));
+
+            let tabBtns = document.querySelectorAll(".tab-btn");
+            tabBtns.forEach(btn => btn.classList.remove("active"));
+
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function addConstraint(e) {
+            e.preventDefault();
+
+            const desc = document.getElementById("con-desc").value;
+            const job = document.getElementById("con-job").value;
+            const type = document.getElementById("con-type").value;
+            const pic = document.getElementById("con-pic").value;
+            const targetDate = document.getElementById("con-date").value;
+
+            const table = document.getElementById("constraint-table").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow(0);
+            newRow.setAttribute("data-status", "open");
+
+            const formattedDate = new Date(targetDate).toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+
+            newRow.innerHTML = `
+                <td><span class="badge yellow">${type}</span></td>
+                <td>${desc}</td>
+                <td>${job}</td>
+                <td>${pic}</td>
+                <td>${formattedDate}</td>
+                <td><span class="badge yellow">IN PROGRESS</span></td>
+                <td><button onclick="resolveConstraint(this)" class="badge green" style="border:none; cursor:pointer;">Set Clear</button></td>
+            `;
+
+            document.getElementById("constraint-form").reset();
+            updateConstraintStats();
+        }
+
+        function resolveConstraint(btn) {
+            const row = btn.closest("tr");
+            row.setAttribute("data-status", "resolved");
+
+            const statusCell = row.cells[5];
+            statusCell.innerHTML = `<span class="badge green">RESOLVED</span>`;
+            row.cells[6].innerText = "-";
+
+            updateConstraintStats();
+        }
+
+        function updateConstraintStats() {
+            const rows = document.querySelectorAll("#constraint-table tbody tr");
+            let total = rows.length, open = 0, overdue = 0, resolved = 0;
+
+            rows.forEach(row => {
+                const status = row.getAttribute("data-status");
+                if (status === "open") open++;
+                else if (status === "overdue") overdue++;
+                else if (status === "resolved") resolved++;
+            });
+
+            document.getElementById("count-total").innerText = total;
+            document.getElementById("count-open").innerText = open;
+            document.getElementById("count-overdue").innerText = overdue;
+            document.getElementById("count-resolved").innerText = resolved;
+        }
+
+        function recalculatePPC() {
+            const tableRows = document.querySelectorAll("#wwp-table tbody tr");
+            let totalTasks = tableRows.length, completedTasks = 0;
+
+            tableRows.forEach(row => {
+                const checkbox = row.querySelector("input[type='checkbox']");
+                const selectElement = row.querySelector("select");
+
+                if (checkbox.checked) {
+                    completedTasks++;
+                    selectElement.disabled = true;
+                    selectElement.innerHTML = `<option value="None">Selesai 100%</option>`;
+                } else {
+                    selectElement.disabled = false;
+                    selectElement.innerHTML = `
+                        <option value="Material">Gagal: Material Belum Datang</option>
+                        <option value="Alat">Gagal: Alat Berat Standby</option>
+                        <option value="Cuaca">Gagal: Faktor Cuaca Buruk</option>
+                        <option value="Tenaga">Gagal: Kekurangan Tenaga Kerja</option>
+                    `;
+                }
+            });
+
+            const ppcPercentage = Math.round((completedTasks / totalTasks) * 100);
+
+            document.getElementById("ppc-percentage").innerText = ppcPercentage + "%";
+
+            const donut = document.getElementById("ppc-donut");
+            donut.style.background = `conic-gradient(var(--success) 0% ${ppcPercentage}%, #dce9e8 ${ppcPercentage}% 100%)`;
+
+            updateRootCauses();
+        }
+
+        function updateRootCauses() {
+            const rows = document.querySelectorAll("#wwp-table tbody tr");
+            let uncompletedCount = 0;
+
+            let counts = { Material: 0, Alat: 0, Cuaca: 0, Tenaga: 0 };
+
+            rows.forEach(row => {
+                const checkbox = row.querySelector("input[type='checkbox']");
+                if (!checkbox.checked) {
+                    uncompletedCount++;
+                    const select = row.querySelector("select");
+                    const val = select.value;
+                    if (counts[val] !== undefined) counts[val]++;
+                }
+            });
+
+            if (uncompletedCount === 0) {
+                ["material", "alat", "cuaca", "manpower"].forEach(key => {
+                    document.getElementById("val-rc-" + key).innerText = "0%";
+                    document.getElementById("bar-rc-" + key).style.width = "0%";
+                });
+                return;
+            }
+
+            const matPct = Math.round((counts.Material / uncompletedCount) * 100);
+            const alatPct = Math.round((counts.Alat / uncompletedCount) * 100);
+            const weatherPct = Math.round((counts.Cuaca / uncompletedCount) * 100);
+            const manPct = Math.round((counts.Tenaga / uncompletedCount) * 100);
+
+            document.getElementById("val-rc-material").innerText = matPct + "%";
+            document.getElementById("bar-rc-material").style.width = matPct + "%";
+            document.getElementById("val-rc-alat").innerText = alatPct + "%";
+            document.getElementById("bar-rc-alat").style.width = alatPct + "%";
+            document.getElementById("val-rc-cuaca").innerText = weatherPct + "%";
+            document.getElementById("bar-rc-cuaca").style.width = weatherPct + "%";
+            document.getElementById("val-rc-manpower").innerText = manPct + "%";
+            document.getElementById("bar-rc-manpower").style.width = manPct + "%";
+        }
+
+        window.onload = function() {
+            updateConstraintStats();
+            recalculatePPC();
+        };
+    </script>
+</body>
+</html>

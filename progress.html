@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPROYEK - Progress Report & Earned Value Management (EVM)</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --sidebar-color: #37807f;
+            --sidebar-dark: #22373f;
+
+            --primary: #0f5f66;
+            --primary-dark: #12333b;
+            --primary-soft: #e6f3f2;
+
+            --success: #2ec4b6;
+            --warning: #ffb703;
+            --danger: #e63946;
+
+            --text: #18333a;
+            --text-soft: #667980;
+
+            --white: #ffffff;
+
+            --border: rgba(255,255,255,0.72);
+            --glass: rgba(255,255,255,0.84);
+
+            --shadow: 0 18px 45px rgba(27, 51, 58, 0.13);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(242, 249, 248, 0.22);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        aside {
+            width: 260px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #37807f 0%,
+                    #22373f 100%
+                );
+
+            color: var(--white);
+
+            padding: 24px 18px;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            height: 100vh;
+
+            z-index: 100;
+
+            box-shadow:
+                8px 0 30px rgba(24, 51, 58, 0.15);
+        }
+
+        .logo-area {
+            padding: 8px 10px 24px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.18);
+
+            margin-bottom: 22px;
+        }
+
+        .logo-area h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo-area span {
+            display: block;
+
+            font-size: 11px;
+
+            color:
+                rgba(255,255,255,0.72);
+
+            margin-top: 5px;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 12px 14px;
+
+            color:
+                rgba(255,255,255,0.70);
+
+            text-decoration: none;
+
+            border-radius: 12px;
+
+            margin-bottom: 7px;
+
+            transition: all 0.25s ease;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .menu-item a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .menu-item.active a,
+        .menu-item a:hover {
+            background:
+                rgba(255,255,255,0.14);
+
+            color: var(--white);
+
+            transform:
+                translateX(2px);
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+            margin-left: 260px;
+
+            padding: 30px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 22px;
+
+            padding: 25px 28px;
+
+            background:
+                var(--glass);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 28px;
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(15px);
+
+            -webkit-backdrop-filter:
+                blur(15px);
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+
+            line-height: 1.25;
+
+            color:
+                var(--primary-dark);
+
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color:
+                var(--text-soft);
+
+            font-size: 13px;
+
+            margin-top: 7px;
+        }
+
+
+        /* =====================================================
+           BADGES
+        ===================================================== */
+
+        .badge {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            line-height: 1.2;
+
+            font-weight: 800;
+
+            letter-spacing: 0.25px;
+
+            color: white;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+        .badge.red {
+            background:
+                var(--danger);
+        }
+
+        .badge.yellow {
+            background:
+                var(--warning);
+
+            color:
+                #27302e;
+        }
+
+        .badge.green {
+            background:
+                var(--success);
+        }
+
+        .badge.blue {
+            background:
+                var(--primary);
+        }
+
+
+        /* =====================================================
+           EVM METRICS
+        ===================================================== */
+
+        .evm-metrics-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .metric-card {
+            position: relative;
+
+            overflow: hidden;
+
+            background:
+                rgba(255,255,255,0.78);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.82);
+
+            border-top:
+                4px solid var(--primary);
+
+            border-radius: 18px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 10px 28px
+                rgba(27,51,58,0.08);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 15px 32px
+                rgba(27,51,58,0.11);
+        }
+
+        .metric-card.success {
+            border-top-color:
+                var(--success);
+        }
+
+        .metric-card.warning {
+            border-top-color:
+                var(--warning);
+        }
+
+        .metric-card.danger {
+            border-top-color:
+                var(--danger);
+        }
+
+        .metric-card .label {
+            font-size: 10px;
+
+            font-weight: 800;
+
+            color:
+                var(--text-soft);
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.7px;
+
+            line-height:
+                1.45;
+        }
+
+        .metric-card .value {
+            font-size: 28px;
+
+            font-weight: 800;
+
+            color:
+                var(--primary-dark);
+
+            margin:
+                9px 0;
+        }
+
+        .metric-card .sub-info {
+            font-size: 10px;
+
+            color:
+                var(--text-soft);
+
+            line-height:
+                1.45;
+        }
+
+
+        /* =====================================================
+           SECTION BOX
+        ===================================================== */
+
+        .section-box {
+            background:
+                var(--glass);
+
+            padding:
+                24px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                20px;
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(15px);
+
+            -webkit-backdrop-filter:
+                blur(15px);
+
+            margin-bottom:
+                22px;
+        }
+
+        .section-box h3 {
+            margin-bottom:
+                18px;
+
+            color:
+                var(--primary-dark);
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+
+            border-bottom:
+                1px solid
+                rgba(18,51,59,0.09);
+
+            padding-bottom:
+                13px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+        }
+
+        .section-box h3 i {
+            color:
+                var(--primary);
+        }
+
+
+        /* =====================================================
+           SPLIT LAYOUT
+        ===================================================== */
+
+        .split-2col {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 2.2fr)
+                minmax(300px, 1fr);
+
+            gap:
+                20px;
+
+            align-items:
+                start;
+        }
+
+
+        /* =====================================================
+           CHART
+        ===================================================== */
+
+        .chart-container {
+            height: 430px;
+
+            position: relative;
+
+            padding:
+                5px;
+        }
+
+
+        /* =====================================================
+           ANALYSIS PANEL
+        ===================================================== */
+
+        .analysis-list {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                22px;
+        }
+
+        .analysis-item {
+            padding:
+                15px;
+
+            background:
+                rgba(230,243,242,0.45);
+
+            border:
+                1px solid
+                rgba(55,128,127,0.08);
+
+            border-radius:
+                13px;
+        }
+
+        .analysis-item small {
+            display:
+                block;
+
+            color:
+                var(--text-soft);
+
+            font-weight:
+                800;
+
+            font-size:
+                10px;
+
+            letter-spacing:
+                0.5px;
+        }
+
+        .analysis-item p {
+            font-size:
+                12px;
+
+            margin-top:
+                7px;
+
+            line-height:
+                1.65;
+
+            color:
+                #405860;
+        }
+
+        .analysis-item strong {
+            color:
+                var(--primary-dark);
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .inline-form {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(170px, 1fr))
+                130px;
+
+            gap:
+                12px;
+
+            background:
+                rgba(230,243,242,0.52);
+
+            border:
+                1px solid
+                rgba(55,128,127,0.10);
+
+            padding:
+                18px;
+
+            border-radius:
+                16px;
+        }
+
+        .form-group {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                6px;
+        }
+
+        .form-group label {
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+            color:
+                var(--primary-dark);
+        }
+
+        .form-group input {
+            width:
+                100%;
+
+            min-height:
+                38px;
+
+            padding:
+                8px 11px;
+
+            border:
+                1px solid
+                rgba(18,51,59,0.14);
+
+            background:
+                rgba(255,255,255,0.88);
+
+            border-radius:
+                10px;
+
+            font-size:
+                12px;
+
+            color:
+                var(--text);
+
+            outline:
+                none;
+
+            transition:
+                all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color:
+                var(--sidebar-color);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(55,128,127,0.12);
+        }
+
+        .btn-submit {
+            background:
+                linear-gradient(
+                    135deg,
+                    #37807f,
+                    #285b61
+                );
+
+            color:
+                white;
+
+            border:
+                none;
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            cursor:
+                pointer;
+
+            align-self:
+                flex-end;
+
+            min-height:
+                38px;
+
+            transition:
+                all 0.2s ease;
+
+            box-shadow:
+                0 7px 17px
+                rgba(55,128,127,0.20);
+        }
+
+        .btn-submit:hover {
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 10px 22px
+                rgba(55,128,127,0.28);
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .section-box:has(table) {
+            overflow-x:
+                auto;
+        }
+
+        table {
+            width:
+                100%;
+
+            min-width:
+                900px;
+
+            border-collapse:
+                separate;
+
+            border-spacing:
+                0;
+
+            font-size:
+                11px;
+
+            text-align:
+                left;
+        }
+
+        table th {
+            background:
+                rgba(230,243,242,0.88);
+
+            color:
+                var(--primary-dark);
+
+            padding:
+                13px 12px;
+
+            font-weight:
+                800;
+
+            border-bottom:
+                1px solid
+                rgba(18,51,59,0.10);
+        }
+
+        table th:first-child {
+            border-radius:
+                10px 0 0 0;
+        }
+
+        table th:last-child {
+            border-radius:
+                0 10px 0 0;
+        }
+
+        table td {
+            padding:
+                13px 12px;
+
+            border-bottom:
+                1px solid
+                rgba(18,51,59,0.07);
+
+            vertical-align:
+                middle;
+
+            color:
+                #344e55;
+        }
+
+        table tbody tr {
+            transition:
+                background 0.18s ease;
+        }
+
+        table tbody tr:hover {
+            background:
+                rgba(255,255,255,0.62);
+        }
+
+        table td:first-child {
+            font-weight:
+                700;
+
+            color:
+                var(--primary-dark);
+        }
+
+
+        /* =====================================================
+           EVM SPECIFIC
+        ===================================================== */
+
+        #val-cpi,
+        #val-spi {
+            letter-spacing:
+                -1px;
+        }
+
+        #val-cv,
+        #val-sv {
+            font-size:
+                25px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .evm-metrics-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .split-2col {
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+
+        @media (max-width: 900px) {
+
+            aside {
+                width:
+                    72px;
+
+                padding:
+                    16px 10px;
+            }
+
+            aside .logo-area h2,
+            aside .logo-area span,
+            .menu-item span {
+                display:
+                    none;
+            }
+
+            .logo-area {
+                padding:
+                    8px 0 18px;
+
+                text-align:
+                    center;
+            }
+
+            .menu-item a {
+                justify-content:
+                    center;
+
+                padding:
+                    13px 8px;
+            }
+
+            main {
+                margin-left:
+                    72px;
+
+                padding:
+                    20px;
+            }
+
+            header {
+                border-radius:
+                    22px;
+
+                padding:
+                    20px;
+            }
+
+            .inline-form {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+
+        @media (max-width: 680px) {
+
+            main {
+                padding:
+                    14px;
+            }
+
+            header {
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+            }
+
+            .header-title h1 {
+                font-size:
+                    21px;
+            }
+
+            .evm-metrics-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .section-box {
+                padding:
+                    17px;
+
+                border-radius:
+                    17px;
+            }
+
+            .inline-form {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .btn-submit {
+                width:
+                    100%;
+            }
+
+            .chart-container {
+                height:
+                    330px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside>
+        <div class="logo-area">
+            <h2>MonitoringSystem</h2>
+            <span>Project Management System</span>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item"><a href="index.html"> <span>Home</span></a></li>
+            <li class="menu-item"><a href="lps.html"> <span>Last Planner Dashboard</span></a></li>
+            <li class="menu-item active"><a href="progress.html"> <span>Progress Monitoring</span></a></li>
+            <li class="menu-item"><a href="stock.html"> <span>Stock Management</span></a></li>
+        </ul>
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- HEADER -->
+
+        <header>
+
+            <div class="header-title">
+
+                <h1>
+                    Progress Report & Earned Value Management (EVM)
+                </h1>
+
+                <p>
+                    Pengendalian Kinerja Biaya & Jadwal Konstruksi -
+                    Span 2 Bridge Construction
+                </p>
+
+            </div>
+
+            <div>
+
+                <span
+                    class="badge blue"
+                    style="font-size:11px; padding:10px 15px;"
+                >
+                    <i class="fa-solid fa-calculator"></i>
+                    EVM ENGINE ACTIVE
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             PRIMARY EVM METRICS
+        ================================================== -->
+
+        <div class="evm-metrics-grid">
+
+            <div class="metric-card">
+
+                <div class="label">
+                    Planned Value (PV)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-pv"
+                >
+                    Rp 2,43 M
+                </div>
+
+                <div class="sub-info">
+                    Rencana Anggaran Kumulatif
+                </div>
+
+            </div>
+
+
+            <div class="metric-card success">
+
+                <div class="label">
+                    Earned Value (EV)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-ev"
+                >
+                    Rp 2,29 M
+                </div>
+
+                <div class="sub-info">
+                    Nilai Hasil Fisik Terpasang
+                </div>
+
+            </div>
+
+
+            <div class="metric-card warning">
+
+                <div class="label">
+                    Actual Cost (AC)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-ac"
+                >
+                    Rp 2,35 M
+                </div>
+
+                <div class="sub-info">
+                    Biaya Aktual Dikeluarkan
+                </div>
+
+            </div>
+
+
+            <div class="metric-card danger">
+
+                <div class="label">
+                    Estimate At Completion (EAC)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-eac"
+                >
+                    Rp 4,96 M
+                </div>
+
+                <div class="sub-info">
+                    Proyeksi Total Biaya
+                    (BAC: 4,86 M)
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PERFORMANCE INDEX
+        ================================================== -->
+
+        <div class="evm-metrics-grid">
+
+
+            <div
+                class="metric-card"
+                id="card-cpi"
+            >
+
+                <div class="label">
+                    Cost Performance Index (CPI)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-cpi"
+                >
+                    0.98
+                </div>
+
+                <div
+                    class="sub-info"
+                    id="status-cpi"
+                >
+                    <span class="badge yellow">
+                        Cost Overrun Kecil
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div
+                class="metric-card"
+                id="card-spi"
+            >
+
+                <div class="label">
+                    Schedule Performance Index (SPI)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-spi"
+                >
+                    0.94
+                </div>
+
+                <div
+                    class="sub-info"
+                    id="status-spi"
+                >
+                    <span class="badge red">
+                        Behind Schedule
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="label">
+                    Cost Variance (CV)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-cv"
+                    style="color:var(--danger);"
+                >
+                    -Rp 58 Jt
+                </div>
+
+                <div class="sub-info">
+                    EV - AC
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="label">
+                    Schedule Variance (SV)
+                </div>
+
+                <div
+                    class="value"
+                    id="val-sv"
+                    style="color:var(--danger);"
+                >
+                    -Rp 136 Jt
+                </div>
+
+                <div class="sub-info">
+                    EV - PV
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             S-CURVE + ANALYSIS
+        ================================================== -->
+
+        <div class="split-2col">
+
+
+            <!-- S-CURVE -->
+
+            <div class="section-box">
+
+                <h3>
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Kurva S Kinerja Proyek
+                </h3>
+
+                <div class="chart-container">
+
+                    <canvas id="scurveChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- ANALYSIS -->
+
+            <div class="section-box">
+
+                <h3>
+                    <i class="fa-solid fa-bullseye"></i>
+
+                    Analisis & Proyeksi Akhir
+                </h3>
+
+
+                <div class="analysis-list">
+
+
+                    <div class="analysis-item">
+
+                        <small>
+                            STATUS BIAYA (COST)
+                        </small>
+
+                        <p>
+                            <strong>
+                                CPI = 0.98
+                            </strong>
+
+                            (&lt; 1.0).
+
+                            Pengeluaran aktual sedikit
+                            melebihi anggaran yang
+                            direncanakan untuk bobot
+                            pekerjaan sejauh ini.
+                        </p>
+
+                    </div>
+
+
+                    <div class="analysis-item">
+
+                        <small>
+                            STATUS JADWAL (SCHEDULE)
+                        </small>
+
+                        <p>
+                            <strong>
+                                SPI = 0.94
+                            </strong>
+
+                            (&lt; 1.0).
+
+                            Proyek mengalami
+                            keterlambatan progres
+                            sekitar 6% dari jadwal
+                            kurva S rencana.
+                        </p>
+
+                    </div>
+
+
+                    <div class="analysis-item">
+
+                        <small>
+                            PROYEKSI BIAYA AKHIR (EAC)
+                        </small>
+
+                        <p>
+
+                            Estimasi penyelesaian
+                            proyek membengkak menjadi
+
+                            <strong>
+                                Rp 4,96 Miliar
+                            </strong>
+
+                            dari BAC awal sebesar
+                            Rp 4,86 Miliar.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             WEEKLY UPDATE FORM
+        ================================================== -->
+
+        <div class="section-box">
+
+            <h3>
+                <i class="fa-solid fa-pen-to-square"></i>
+
+                Update Progress Report Mingguan
+            </h3>
+
+
+            <form
+                class="inline-form"
+                id="progress-form"
+                onsubmit="updateProgress(event)"
+            >
+
+
+                <div class="form-group">
+
+                    <label for="inp-week">
+                        Minggu Ke-
+                    </label>
+
+                    <input
+                        type="number"
+                        id="inp-week"
+                        value="15"
+                        min="1"
+                        max="52"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="inp-pv">
+                        Planned Value / PV (Jt Rp)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="inp-pv"
+                        placeholder="Contoh: 2916"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="inp-ev">
+                        Earned Value / EV (Jt Rp)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="inp-ev"
+                        placeholder="Contoh: 2741"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="inp-ac">
+                        Actual Cost / AC (Jt Rp)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="inp-ac"
+                        placeholder="Contoh: 2819"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-submit"
+                >
+
+                    <i class="fa-solid fa-calculator"></i>
+
+                    Hitung EVM
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             EVM HISTORY TABLE
+        ================================================== -->
+
+        <div class="section-box">
+
+            <h3>
+                <i class="fa-solid fa-table"></i>
+
+                Log Riwayat Kinerja EVM Mingguan
+            </h3>
+
+
+            <table id="evm-log-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Minggu</th>
+
+                        <th>PV (Jt Rp)</th>
+
+                        <th>EV (Jt Rp)</th>
+
+                        <th>AC (Jt Rp)</th>
+
+                        <th>CPI</th>
+
+                        <th>SPI</th>
+
+                        <th>CV (Jt Rp)</th>
+
+                        <th>SV (Jt Rp)</th>
+
+                        <th>Status Performa</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <tr>
+
+                        <td>Minggu 14</td>
+
+                        <td>2.430</td>
+
+                        <td>2.294</td>
+
+                        <td>2.352</td>
+
+                        <td>0,98</td>
+
+                        <td>0,94</td>
+
+                        <td style="color:var(--danger);">
+                            -58
+                        </td>
+
+                        <td style="color:var(--danger);">
+                            -136
+                        </td>
+
+                        <td>
+
+                            <span class="badge yellow">
+                                Critical Attention
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>Minggu 12</td>
+
+                        <td>1.750</td>
+
+                        <td>1.711</td>
+
+                        <td>1.691</td>
+
+                        <td>1,01</td>
+
+                        <td>0,98</td>
+
+                        <td style="color:var(--success);">
+                            +20
+                        </td>
+
+                        <td style="color:var(--danger);">
+                            -39
+                        </td>
+
+                        <td>
+
+                            <span class="badge green">
+                                Good Cost Control
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>Minggu 10</td>
+
+                        <td>972</td>
+
+                        <td>953</td>
+
+                        <td>933</td>
+
+                        <td>1,02</td>
+
+                        <td>0,98</td>
+
+                        <td style="color:var(--success);">
+                            +20
+                        </td>
+
+                        <td style="color:var(--danger);">
+                            -19
+                        </td>
+
+                        <td>
+
+                            <span class="badge green">
+                                On Track
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const BAC = 4860;
+
+
+        /* =====================================================
+           S-CURVE CHART
+        ===================================================== */
+
+        const ctx =
+            document
+                .getElementById('scurveChart')
+                .getContext('2d');
+
+
+        const scurveChart = new Chart(ctx, {
+
+            type: 'line',
+
+            data: {
+
+                labels: [
+                    'M1',
+                    'M3',
+                    'M5',
+                    'M7',
+                    'M9',
+                    'M11',
+                    'M13',
+                    'M14',
+                    'M16 (FC)',
+                    'M18 (FC)',
+                    'M20 (FC)'
+                ],
+
+                datasets: [
+
+                    {
+                        label:
+                            'Planned Value (PV)',
+
+                        data: [
+                            49,
+                            146,
+                            350,
+                            680,
+                            1205,
+                            1905,
+                            2236,
+                            2430,
+                            3208,
+                            4179,
+                            4860
+                        ],
+
+                        borderColor:
+                            '#37807f',
+
+                        backgroundColor:
+                            'rgba(55,128,127,0.08)',
+
+                        fill:
+                            true,
+
+                        tension:
+                            0.4,
+
+                        borderWidth:
+                            3,
+
+                        pointRadius:
+                            5
+                    },
+
+
+                    {
+                        label:
+                            'Earned Value (EV)',
+
+                        data: [
+                            39,
+                            136,
+                            330,
+                            642,
+                            1147,
+                            1808,
+                            2119,
+                            2294,
+                            null,
+                            null,
+                            null
+                        ],
+
+                        borderColor:
+                            '#2ec4b6',
+
+                        backgroundColor:
+                            'transparent',
+
+                        fill:
+                            false,
+
+                        tension:
+                            0.4,
+
+                        borderWidth:
+                            3,
+
+                        pointRadius:
+                            5
+                    },
+
+
+                    {
+                        label:
+                            'Actual Cost (AC)',
+
+                        data: [
+                            43,
+                            140,
+                            340,
+                            661,
+                            1186,
+                            1847,
+                            2158,
+                            2352,
+                            null,
+                            null,
+                            null
+                        ],
+
+                        borderColor:
+                            '#e63946',
+
+                        backgroundColor:
+                            'transparent',
+
+                        fill:
+                            false,
+
+                        tension:
+                            0.4,
+
+                        borderWidth:
+                            3,
+
+                        pointRadius:
+                            5
+                    }
+
+                ]
+            },
+
+
+            options: {
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+
+                interaction: {
+
+                    intersect:
+                        false,
+
+                    mode:
+                        'index'
+
+                },
+
+
+                plugins: {
+
+                    legend: {
+
+                        position:
+                            'bottom',
+
+                        labels: {
+
+                            font: {
+                                family:
+                                    'Plus Jakarta Sans',
+
+                                size:
+                                    11,
+
+                                weight:
+                                    '700'
+                            },
+
+                            padding:
+                                18,
+
+                            usePointStyle:
+                                true
+                        }
+                    },
+
+
+                    tooltip: {
+
+                        backgroundColor:
+                            'rgba(18,51,59,0.92)',
+
+                        titleFont: {
+                            family:
+                                'Plus Jakarta Sans',
+
+                            weight:
+                                '700'
+                        },
+
+                        bodyFont: {
+                            family:
+                                'Plus Jakarta Sans'
+                        },
+
+                        padding:
+                            12,
+
+                        cornerRadius:
+                            10
+                    }
+
+                },
+
+
+                scales: {
+
+                    x: {
+
+                        ticks: {
+
+                            font: {
+
+                                family:
+                                    'Plus Jakarta Sans',
+
+                                size:
+                                    10,
+
+                                weight:
+                                    '600'
+                            }
+                        },
+
+                        title: {
+
+                            display:
+                                true,
+
+                            text:
+                                'Minggu Konstruksi (Time Span)',
+
+                            font: {
+
+                                family:
+                                    'Plus Jakarta Sans',
+
+                                size:
+                                    11,
+
+                                weight:
+                                    '700'
+                            }
+                        },
+
+                        grid: {
+                            color:
+                                'rgba(18,51,59,0.06)'
+                        }
+
+                    },
+
+
+                    y: {
+
+                        ticks: {
+
+                            font: {
+
+                                family:
+                                    'Plus Jakarta Sans',
+
+                                size:
+                                    10,
+
+                                weight:
+                                    '600'
+                            }
+                        },
+
+                        title: {
+
+                            display:
+                                true,
+
+                            text:
+                                'Biaya Kumulatif (Juta Rp)',
+
+                            font: {
+
+                                family:
+                                    'Plus Jakarta Sans',
+
+                                size:
+                                    11,
+
+                                weight:
+                                    '700'
+                            }
+                        },
+
+                        min:
+                            0,
+
+                        max:
+                            5000,
+
+                        grid: {
+                            color:
+                                'rgba(18,51,59,0.06)'
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        /* =====================================================
+           UPDATE EVM
+        ===================================================== */
+
+        function updateProgress(e) {
+
+            e.preventDefault();
+
+
+            const week =
+                document
+                    .getElementById('inp-week')
+                    .value;
+
+
+            const pv =
+                parseFloat(
+                    document
+                        .getElementById('inp-pv')
+                        .value
+                );
+
+
+            const ev =
+                parseFloat(
+                    document
+                        .getElementById('inp-ev')
+                        .value
+                );
+
+
+            const ac =
+                parseFloat(
+                    document
+                        .getElementById('inp-ac')
+                        .value
+                );
+
+
+            /* ================================
+               EVM FORMULAS
+            ================================= */
+
+            const cpi =
+                (ev / ac).toFixed(2);
+
+
+            const spi =
+                (ev / pv).toFixed(2);
+
+
+            const cv =
+                Math.round(ev - ac);
+
+
+            const sv =
+                Math.round(ev - pv);
+
+
+            const eac =
+                Math.round(BAC / cpi);
+
+
+            /* ================================
+               UPDATE MAIN METRICS
+            ================================= */
+
+            document
+                .getElementById('val-pv')
+                .innerText =
+                `Rp ${(pv / 1000).toFixed(2)} M`;
+
+
+            document
+                .getElementById('val-ev')
+                .innerText =
+                `Rp ${(ev / 1000).toFixed(2)} M`;
+
+
+            document
+                .getElementById('val-ac')
+                .innerText =
+                `Rp ${(ac / 1000).toFixed(2)} M`;
+
+
+            document
+                .getElementById('val-eac')
+                .innerText =
+                `Rp ${(eac / 1000).toFixed(2)} M`;
+
+
+            /* ================================
+               UPDATE INDEX
+            ================================= */
+
+            document
+                .getElementById('val-cpi')
+                .innerText =
+                cpi;
+
+
+            document
+                .getElementById('val-spi')
+                .innerText =
+                spi;
+
+
+            document
+                .getElementById('val-cv')
+                .innerText =
+                `${cv >= 0 ? '+' : '-'}Rp ${Math.abs(cv)} Jt`;
+
+
+            document
+                .getElementById('val-sv')
+                .innerText =
+                `${sv >= 0 ? '+' : '-'}Rp ${Math.abs(sv)} Jt`;
+
+
+            /* ================================
+               VARIANCE COLORS
+            ================================= */
+
+            document
+                .getElementById('val-cv')
+                .style.color =
+                cv >= 0
+                    ? 'var(--success)'
+                    : 'var(--danger)';
+
+
+            document
+                .getElementById('val-sv')
+                .style.color =
+                sv >= 0
+                    ? 'var(--success)'
+                    : 'var(--danger)';
+
+
+            /* ================================
+               CPI STATUS
+            ================================= */
+
+            const statusCpi =
+                document
+                    .getElementById('status-cpi');
+
+
+            statusCpi.innerHTML =
+                cpi >= 1.0
+
+                    ? `
+                        <span class="badge green">
+                            Under Budget
+                        </span>
+                    `
+
+                    : `
+                        <span class="badge red">
+                            Over Budget
+                        </span>
+                    `;
+
+
+            /* ================================
+               SPI STATUS
+            ================================= */
+
+            const statusSpi =
+                document
+                    .getElementById('status-spi');
+
+
+            statusSpi.innerHTML =
+                spi >= 1.0
+
+                    ? `
+                        <span class="badge green">
+                            Ahead / On Schedule
+                        </span>
+                    `
+
+                    : `
+                        <span class="badge red">
+                            Behind Schedule
+                        </span>
+                    `;
+
+
+            /* ================================
+               INSERT HISTORY
+            ================================= */
+
+            const table =
+                document
+                    .getElementById('evm-log-table')
+                    .getElementsByTagName('tbody')[0];
+
+
+            const newRow =
+                table.insertRow(0);
+
+
+            let statusBadge =
+                '<span class="badge green">Good Performance</span>';
+
+
+            if (
+                cpi < 1.0 ||
+                spi < 1.0
+            ) {
+
+                statusBadge =
+                    '<span class="badge yellow">Attention Needed</span>';
+
+            }
+
+
+            if (
+                cpi < 0.95 &&
+                spi < 0.95
+            ) {
+
+                statusBadge =
+                    '<span class="badge red">Critical Overrun</span>';
+
+            }
+
+
+            newRow.innerHTML = `
+
+                <td>
+                    Minggu ${week}
+                </td>
+
+                <td>
+                    ${pv.toLocaleString('id-ID')}
+                </td>
+
+                <td>
+                    ${ev.toLocaleString('id-ID')}
+                </td>
+
+                <td>
+                    ${ac.toLocaleString('id-ID')}
+                </td>
+
+                <td>
+                    ${cpi}
+                </td>
+
+                <td>
+                    ${spi}
+                </td>
+
+                <td style="color:${cv >= 0 ? 'var(--success)' : 'var(--danger)'}">
+
+                    ${cv >= 0 ? '+' : '-'}
+                    ${Math.abs(cv)}
+
+                </td>
+
+                <td style="color:${sv >= 0 ? 'var(--success)' : 'var(--danger)'}">
+
+                    ${sv >= 0 ? '+' : '-'}
+                    ${Math.abs(sv)}
+
+                </td>
+
+                <td>
+                    ${statusBadge}
+                </td>
+
+            `;
+
+
+            /* ================================
+               UPDATE CHART
+            ================================= */
+
+            scurveChart.data.labels.splice(
+                7,
+                0,
+                `M${week}`
+            );
+
+
+            scurveChart.data.datasets[0].data.splice(
+                7,
+                0,
+                pv
+            );
+
+
+            scurveChart.data.datasets[1].data.splice(
+                7,
+                0,
+                ev
+            );
+
+
+            scurveChart.data.datasets[2].data.splice(
+                7,
+                0,
+                ac
+            );
+
+
+            scurveChart.update();
+        }
+
+    </script>
+
+</body>
+</html>

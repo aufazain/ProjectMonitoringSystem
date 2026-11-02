@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPROYEK - Digital Inventory & Stock Report (JIT Control)</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-dark: #0B2545;
+            --primary-blue: #134074;
+            --secondary-blue: #8DA9C4;
+            --sidebar-color: #37807f;
+            --light-bg: #EEF4F8;
+            --white: #FFFFFF;
+            --success: #2ec4b6;
+            --warning: #ffb703;
+            --danger: #e63946;
+            --text-dark: #1d3557;
+            --gray-sub: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Background Gambar Utama Template */
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation Standard */
+        aside {
+            width: 260px;
+            background: linear-gradient(180deg, #37807f 0%, #22373f 100%);
+            color: var(--white);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo-area {
+            padding: 10px 0 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .logo-area h2 {
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: var(--white);
+        }
+
+        .logo-area span {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            display: block;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item a {
+            display: block;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .menu-item.active a, .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+        }
+
+        /* Main Content Area */
+        main {
+            position: relative;
+            z-index: 5;
+            margin-left: 260px;
+            flex-grow: 1;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        /* Header Glassmorphism */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 25px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color: var(--gray-sub);
+            font-size: 0.95rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Badges Standard */
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+        }
+        .badge.red { background-color: var(--danger); }
+        .badge.yellow { background-color: var(--warning); color: #000; }
+        .badge.green { background-color: var(--success); }
+        .badge.blue { background-color: var(--sidebar-color); }
+
+        /* Grid Metrics Standard */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 22px;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--sidebar-color);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-card.success { border-top-color: var(--success); }
+        .metric-card.warning { border-top-color: var(--success); }
+        .metric-card.danger { border-top-color: var(--success); }
+
+        .metric-card .label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .metric-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .metric-card .sub-info {
+            font-size: 0.85rem;
+            color: var(--gray-sub);
+        }
+
+        /* Section Boxes Glassmorphism */
+        .section-box {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .section-box h3 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 12px;
+        }
+
+        /* Form Controls */
+        .inline-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 22px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.9);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--sidebar-color);
+        }
+
+        .btn-submit {
+            background-color: var(--sidebar-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #22373f;
+        }
+
+        /* Table Styling Standard */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        table th {
+            background-color: rgba(238, 244, 248, 0.8);
+            color: var(--primary-dark);
+            padding: 14px 16px;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            vertical-align: middle;
+        }
+
+        table tr:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive Design Standard */
+        @media (max-width: 900px) {
+            aside { 
+                width: 70px; 
+                padding: 10px; 
+            }
+            aside .logo-area h2, aside span, .menu-item span { 
+                display: none; 
+            }
+            main { 
+                margin-left: 70px; 
+                padding: 20px; 
+            }
+            .metrics-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo-area">
+            <h2>MonitoringSystem</h2>
+            <span>Project Management System</span>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item"><a href="index.html"><span>Home</span></a></li>
+            <li class="menu-item"><a href="lps.html"><span>Last Planner Dashboard</span></a></li>
+            <li class="menu-item"><a href="progress.html"><span>Progress Monitoring</span></a></li>
+            <li class="menu-item active"><a href="stock.html"><span>Stock Management</span></a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <header>
+            <div class="header-title">
+                <h1>Digital Inventory & Stock Report (JIT Control)</h1>
+                <p>Pengawasan & Control Material On-Site - Span 2 Bridge Construction</p>
+            </div>
+            <div>
+                <span class="badge blue" style="padding: 8px 16px;">SITE CONTROL ACTIVE</span>
+            </div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card success">
+                <div class="label">Total Material Tapak</div>
+                <div class="value">24 Kategori</div>
+                <div class="sub-info">Baja, Decking, Fastener, Beton</div>
+            </div>
+            <div class="metric-card warning">
+                <div class="label">Peringatan Reorder</div>
+                <div class="value" id="cnt-reorder">2 Material</div>
+                <div class="sub-info">Mendekati Stok Minimum Site</div>
+            </div>
+            <div class="metric-card danger">
+                <div class="label">Stok Kritis Lapangan</div>
+                <div class="value" id="cnt-critical">1 Item</div>
+                <div class="sub-info">Perlu Pasokan Segera</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Efisiensi JIT Tapak</div>
+                <div class="value">96,4%</div>
+                <div class="sub-info">Zero Waste Staging Area</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Pencatatan & Pengawasan Material Tapak (On-Site Log)</h3>
+            
+            <form class="inline-form" onsubmit="processSiteLog(event)">
+                <div class="form-group">
+                    <label for="inp-date">Tanggal & Waktu Kedatangan/Pakai</label>
+                    <input type="datetime-local" id="inp-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inp-material">Pilih Material / Komponen</label>
+                    <select id="inp-material" required>
+                        <option value="">-- Pilih Material Tapak --</option>
+                        <option value="STL-WF350">Baja atap no45 350x175 (segmen 2)</option>
+                        <option value="FLR-DEC-02">Steel Decking / Bondek Galvanis 0.75mm</option>
+                        <option value="ANC-BOLT-M24">Anchor Bolt Grade 8.8 M24</option>
+                        <option value="MEP-CON-04">Kabel Conduit HD PVC 3/4"</option>
+                        <option value="CONC-K350">Beton Readymix K-350 (Truk Mixer)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="inp-flow">Aktivitas Material</label>
+                    <select id="inp-flow" required>
+                        <option value="IN">Penerimaan dari Supplier (Kedatangan Site)</option>
+                        <option value="OUT">Pengeluaran ke Area Ereksi / Pemasangan</option>
+                        <option value="RETURN">Sisa / Pengembalian ke Staging Area</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="inp-qty">Volume / Jumlah</label>
+                    <input type="number" id="inp-qty" min="1" placeholder="Contoh: 10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inp-location">Zona</label>
+                    <input type="text" id="inp-location" placeholder="Misal: fabri 2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inp-surat-jalan">No. Surat Jalan / SJ Supplier</label>
+                    <input type="text" id="inp-surat-jalan" placeholder="Contoh: SJ-WIKA-8821">
+                </div>
+
+                <button type="submit" class="btn-submit" style="grid-column: 1 / -1; justify-self: end;">Simpan Catatan Site</button>
+            </form>
+        </div>
+
+        <div class="section-box">
+            <h3>Real-Time Stock Ledger Tapak & Reorder Alert</h3>
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Kode Item</th>
+                        <th>Nama Material & Spesifikasi</th>
+                        <th>Kategori</th>
+                        <th>Stok Tapak</th>
+                        <th>Stok Min. JIT</th>
+                        <th>Satuan</th>
+                        <th>Status Stok Tapak</th>
+                        <th>Tindakan Pengadaan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>STL-WF350</strong></td>
+                        <td>Baja element f45 atap baja</td>
+                        <td>Baja Utama</td>
+                        <td style="font-weight: 700;">12</td>
+                        <td>15</td>
+                        <td>Batang</td>
+                        <td><span class="badge yellow">Reorder Alert</span></td>
+                        <td><button class="btn-submit" style="padding: 6px 12px; font-size: 0.8rem;" onclick="triggerReorder('STL-WF350')">Minta Kirim</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>FLR-DEC-02</strong></td>
+                        <td>Steel Decking / Bondek Galvanis 0.75mm</td>
+                        <td>Flooring</td>
+                        <td style="font-weight: 700; color: var(--danger);">0</td>
+                        <td>20</td>
+                        <td>Lembar</td>
+                        <td><span class="badge red">Stok Kritis</span></td>
+                        <td><button class="btn-submit" style="padding: 6px 12px; font-size: 0.8rem; background-color: var(--danger);" onclick="triggerReorder('FLR-DEC-02')">Pemesanan Darurat</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MEP-CON-04</strong></td>
+                        <td>Kabel Conduit HD PVC 3/4"</td>
+                        <td>MEP</td>
+                        <td style="font-weight: 700;">150</td>
+                        <td>50</td>
+                        <td>Batang</td>
+                        <td><span class="badge green">Stok Cukup</span></td>
+                        <td><button class="btn-submit" style="padding: 6px 12px; font-size: 0.8rem; background-color: var(--gray-sub);" disabled>Stok Aman</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ANC-BOLT-M24</strong></td>
+                        <td>Anchor Bolt Grade 8.8 M24x750mm</td>
+                        <td>Fastener</td>
+                        <td style="font-weight: 700;">45</td>
+                        <td>40</td>
+                        <td>Pcs</td>
+                        <td><span class="badge yellow">Reorder Alert</span></td>
+                        <td><button class="btn-submit" style="padding: 6px 12px; font-size: 0.8rem;" onclick="triggerReorder('ANC-BOLT-M24')">Minta Kirim</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-box">
+            <h3>Riwayat Aktivitas Material di Lapangan</h3>
+            <table id="site-log-history">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Material</th>
+                        <th>Aktivitas</th>
+                        <th>Volume</th>
+                        <th>Zona Target</th>
+                        <th>No. Surat Jalan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>03/09/2026 10:15</td>
+                        <td>Baja elemen atap fg5f</td>
+                        <td><span class="badge green">Kedatangan Site</span></td>
+                        <td>5 Batang</td>
+                        <td>Staging atap segmen 2</td>
+                        <td>SJ-WIKA-9921</td>
+                    </tr>
+                    <tr>
+                        <td>03/09/2026 08:30</td>
+                        <td>Anchor Bolt Grade 8.8 M24</td>
+                        <td><span class="badge blue">Pengeluaran Ereksi</span></td>
+                        <td>10 Pcs</td>
+                        <td>Pier 2</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById('inp-date').value = new Date().toISOString().slice(0, 16);
+
+        function processSiteLog(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('inp-date').value.replace('T', ' ');
+            const matSelect = document.getElementById('inp-material');
+            const matText = matSelect.options[matSelect.selectedIndex].text;
+            const flow = document.getElementById('inp-flow').value;
+            const qty = document.getElementById('inp-qty').value;
+            const location = document.getElementById('inp-location').value;
+            const sj = document.getElementById('inp-surat-jalan').value || '-';
+
+            let flowBadge = '<span class="badge green">Kedatangan Site</span>';
+            if (flow === 'OUT') flowBadge = '<span class="badge blue">Pengeluaran Ereksi</span>';
+            if (flow === 'RETURN') flowBadge = '<span class="badge yellow">Sisa/Pengembalian</span>';
+
+            const table = document.getElementById('site-log-history').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow(0);
+
+            newRow.innerHTML = `
+                <td>${date}</td>
+                <td>${matText}</td>
+                <td>${flowBadge}</td>
+                <td>${qty} Unit/Pcs</td>
+                <td>${location}</td>
+                <td>${sj}</td>
+            `;
+
+            alert(`Catatan material di site berhasil diperbarui!\n\nMaterial: ${matText}\nZona: ${location}`);
+
+            document.getElementById('inp-qty').value = '';
+            document.getElementById('inp-location').value = '';
+            document.getElementById('inp-surat-jalan').value = '';
+        }
+
+        function triggerReorder(itemCode) {
+            alert(`Permintaan pengiriman material [${itemCode}] ke site telah dikirimkan ke Tim Logistik / Supplier.`);
+        }
+    </script>
+</body>
+</html>
